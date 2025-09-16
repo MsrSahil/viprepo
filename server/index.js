@@ -7,12 +7,21 @@ import cors from "cors";
 import morgan from "morgan";
 import authRoutes from "./src/routes/authRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
-
-// import userRoutes from "./src/routes/userRoutes.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+// CORS Configuration to allow both localhost and Netlify
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://viprepofrontend.netlify.app"
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
