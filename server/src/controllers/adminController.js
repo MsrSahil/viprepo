@@ -54,9 +54,6 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-
-
-
 // ✅ Get all pending user registrations
 export const getPendingUsers = async (req, res) => {
   try {
