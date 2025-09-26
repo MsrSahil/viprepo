@@ -1,5 +1,7 @@
 import { config } from "dotenv";
-config();
+import path from "path"; 
+config({ path: path.resolve("./.env") });
+
 
 import express from "express";
 import connectDB from "./src/config/db.js";
@@ -11,7 +13,6 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
-// CORS Configuration to allow both localhost and Netlify
 const allowedOrigins = [
   "http://localhost:5173",
   "https://viprepofrontend.netlify.app"
@@ -26,10 +27,12 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
 
+// Static folder for temporary file uploads
+app.use(express.static("public"));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 
-// app.use("/api/user",userRoutes)
 
 app.get("/api", (req, res) => {
   res.status(200).json({
@@ -50,3 +53,4 @@ app.listen(port, "0.0.0.0", () => {
   console.log(`Listening on ${port}`);
   connectDB();
 });
+
