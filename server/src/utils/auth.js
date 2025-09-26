@@ -7,7 +7,7 @@ const genToken = (user, res) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     maxAge: 24 * 60 * 60 * 1000, // 1 day
     sameSite: "lax",
   });
