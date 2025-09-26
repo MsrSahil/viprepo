@@ -11,7 +11,9 @@ export const adminLogin = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
@@ -33,20 +35,23 @@ export const adminLogin = async (req, res) => {
     });
 
     // User data ko password ke bina select karein
-    const userWithoutPassword = await User.findById(user._id).select('-password');
+    const userWithoutPassword = await User.findById(user._id).select(
+      "-password"
+    );
 
     res
       .cookie("token", token, {
         httpOnly: true,
-        sameSite: "lax",
+        secure: true, // 👈 ADD THIS
+        sameSite: "none", // 👈 CHANGE THIS
         maxAge: 24 * 60 * 60 * 1000,
       })
       .status(200)
       // --- YEH BADLAV KAREIN: User data ko response mein bhejein ---
-      .json({ 
-        success: true, 
+      .json({
+        success: true,
         message: "Admin logged in successfully",
-        data: userWithoutPassword 
+        data: userWithoutPassword,
       });
   } catch (error) {
     console.error(error);
@@ -57,7 +62,9 @@ export const adminLogin = async (req, res) => {
 // ✅ Get all pending user registrations
 export const getPendingUsers = async (req, res) => {
   try {
-    const users = await User.find({ status: 'pending', role: 'user' }).select('-password');
+    const users = await User.find({ status: "pending", role: "user" }).select(
+      "-password"
+    );
     res.status(200).json({ success: true, users });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
@@ -70,29 +77,40 @@ export const updateUserStatus = async (req, res) => {
     const { userId } = req.params;
     const { status } = req.body; // 'approved' or 'rejected'
 
-    if (status === 'approved') {
-      const user = await User.findByIdAndUpdate(userId, { status: 'approved' }, { new: true });
+    if (status === "approved") {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { status: "approved" },
+        { new: true }
+      );
       if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
-      
+
       const subject = "Account Approved! Welcome Aboard!";
       const message = `<p>Hi ${user.fullName},</p><p>Congratulations! Your account has been approved by our admin.</p><p>You can now log in and start using our platform.</p>`;
       sendEmail(user.email, subject, message);
 
-      res.status(200).json({ success: true, message: "User approved successfully." });
-
-    } else if (status === 'rejected') {
+      res
+        .status(200)
+        .json({ success: true, message: "User approved successfully." });
+    } else if (status === "rejected") {
       const user = await User.findByIdAndDelete(userId);
-       if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
-      
+
       const subject = "Update on Your Registration";
       const message = `<p>Hi ${user.fullName},</p><p>We're sorry to inform you that your registration has been rejected.</p>`;
       sendEmail(user.email, subject, message);
 
-      res.status(200).json({ success: true, message: "User rejected and removed." });
+      res
+        .status(200)
+        .json({ success: true, message: "User rejected and removed." });
     } else {
       res.status(400).json({ success: false, message: "Invalid status." });
     }
@@ -101,11 +119,13 @@ export const updateUserStatus = async (req, res) => {
   }
 };
 
-
 // ✅ Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({ role: 'user', status: 'approved' }, "fullName email photo");
+    const users = await User.find(
+      { role: "user", status: "approved" },
+      "fullName email photo"
+    );
     res.status(200).json({ success: true, users });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
@@ -117,7 +137,9 @@ export const getUserDetails = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     const tasks = await Task.find({ user: user._id }).sort({ date: -1 });
     res.status(200).json({ success: true, user, tasks });
@@ -132,7 +154,9 @@ export const giveTask = async (req, res) => {
     const { title, users } = req.body;
 
     if (!title || !users || users.length === 0) {
-      return res.status(400).json({ success: false, message: "Title and users are required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Title and users are required" });
     }
 
     let attachmentUrl = "";
@@ -142,12 +166,14 @@ export const giveTask = async (req, res) => {
     if (req.file) {
       const localFilePath = req.file.path;
       const attachment = await uploadOnCloudinary(localFilePath);
-      
+
       if (attachment && attachment.url) {
         attachmentUrl = attachment.url;
         attachmentPublicId = attachment.public_id;
       } else {
-        return res.status(500).json({ success: false, message: "File upload failed" });
+        return res
+          .status(500)
+          .json({ success: false, message: "File upload failed" });
       }
     }
 
@@ -165,8 +191,9 @@ export const giveTask = async (req, res) => {
 
     await Task.insertMany(taskDocs);
 
-    res.status(201).json({ success: true, message: "Task assigned successfully" });
-
+    res
+      .status(201)
+      .json({ success: true, message: "Task assigned successfully" });
   } catch (error) {
     console.error("Assign Task Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
