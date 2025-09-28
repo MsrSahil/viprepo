@@ -1,7 +1,6 @@
 import { config } from "dotenv";
-import path from "path"; 
+import path from "path";
 config({ path: path.resolve("./.env") });
-
 
 import express from "express";
 import connectDB from "./src/config/db.js";
@@ -13,15 +12,16 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://viprepofrontend.netlify.app"
-];
-
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: `${
+      process.env.NODE_ENV === "Production"
+        ? "http://52.233.92.159"
+        : "http://localhost:5173"
+    }`,
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(morgan("dev"));
@@ -30,11 +30,10 @@ app.use(cookieParser());
 // Static folder for temporary file uploads
 app.use(express.static("public"));
 
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
 
-
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({
     message: "backend is running",
   });
@@ -49,8 +48,8 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, "0.0.0.0", () => {
+
+app.listen(port, () => {
   console.log(`Listening on ${port}`);
   connectDB();
 });
-

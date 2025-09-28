@@ -5,12 +5,13 @@ const genToken = (user, res) => {
     expiresIn: "1d",
   });
 
-  res.cookie("token", token, {
+    res.cookie("token", token, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "Production",
     maxAge: 24 * 60 * 60 * 1000, // 1 day
-    sameSite: "none",
+    sameSite: "lax",
   });
+
 
   return token;
 };
