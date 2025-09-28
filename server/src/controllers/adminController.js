@@ -43,7 +43,7 @@ export const adminLogin = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: true, // 👈 ADD THIS
-        sameSite: "none", // 👈 CHANGE THIS
+        sameSite: "lax", // 👈 CHANGE THIS
         maxAge: 24 * 60 * 60 * 1000,
       })
       .status(200)
