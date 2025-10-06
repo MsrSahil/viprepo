@@ -24,6 +24,7 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log("Route:", import.meta.env.VITE_API_URL + "/admin/adminlogin");
       const res = await api.post("/admin/adminlogin", formData, { withCredentials: true });
       toast.success(res.data.message);
       

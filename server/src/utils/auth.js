@@ -12,6 +12,8 @@ const genToken = (user, res) => {
     sameSite: "lax",
   });
 
+  console.log("Generated Token:", token);
+  console.log("User ID:", user._id);
 
   return token;
 };

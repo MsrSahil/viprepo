@@ -1,7 +1,7 @@
 import Task from "../models/task.js";
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import genToken from "../utils/auth.js";
 import sendEmail from "../utils/sendEmail.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 
@@ -30,29 +30,19 @@ export const adminLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = genToken(user, res);
+    console.log("Admin Token:", token);
 
     // User data ko password ke bina select karein
     const userWithoutPassword = await User.findById(user._id).select(
       "-password"
     );
 
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true, // 👈 ADD THIS
-        sameSite: "lax", // 👈 CHANGE THIS
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .status(200)
-      // --- YEH BADLAV KAREIN: User data ko response mein bhejein ---
-      .json({
-        success: true,
-        message: "Admin logged in successfully",
-        data: userWithoutPassword,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Admin logged in successfully",
+      data: userWithoutPassword,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
