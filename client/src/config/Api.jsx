@@ -1,11 +1,13 @@
 import axios from "axios";
-import { cookieStore } from "cookie-store";
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
-   headers: {
-    Authorization: `Bearer ${cookieStore.get("token")?.value || ""}`,
+  headers: {
+    Authorization: token ? `Bearer ${token}` : "",
   },
 });
 
