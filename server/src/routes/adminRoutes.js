@@ -12,6 +12,12 @@ import { upload } from "../middlewares/multer.middleware.js"; // Multer ko impor
 
 const router = express.Router();
 
+router.all("/", (req, res) => {
+  res.status(200).json({
+    message: "Admin route is working",
+  });
+});
+
 router.post("/adminlogin", adminLogin);
 
 // Protected Admin Routes

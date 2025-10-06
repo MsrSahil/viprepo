@@ -13,6 +13,12 @@ import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+router.all("/", (req, res) => {
+  res.status(200).json({
+    message: "auth route is working",
+  });
+});
+
 router.post("/register", Register);
 router.post("/login", Login);
 router.post("/sendOtpRegister", SendOTPForRegister);
