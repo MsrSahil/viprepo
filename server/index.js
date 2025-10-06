@@ -39,6 +39,30 @@ app.get("/", (req, res) => {
   });
 });
 
+app.post("/", (req, res) => {
+  res.status(200).json({
+    message: "backend Post is running",
+  });
+});
+
+app.put("/", (req, res) => {
+  res.status(200).json({
+    message: "backend Put is running",
+  });
+});
+
+app.delete("/", (req, res) => {
+  res.status(200).json({
+    message: "backend Delete is running",
+  });
+});
+
+app.patch("/", (req, res) => {
+  res.status(200).json({
+    message: "backend Patch is running",
+  });
+});
+
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
