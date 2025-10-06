@@ -28,6 +28,10 @@ const Login = () => {
     // Add login logic here
     console.log("Login form submitted:", formData);
     try {
+
+      //print the route in console.log along with baseURL
+      console.log("Route:", import.meta.env.VITE_API_URL + "/auth/sendOtpLogin");
+      
       const res = await api.post("/auth/sendOtpLogin", formData);
 
       if (res.data.message === "OTP sent successfully") {
